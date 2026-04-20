@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 def project_root() -> Path:
-    """`wsl_tabby_stack/` (parent of `scripts/`)."""
+    """`exllamav3-tabbyapi-docker-config/` (parent of `scripts/`)."""
     return Path(__file__).resolve().parent.parent
 
 
