@@ -1,0 +1,53 @@
+# ExLlamaV3 + TabbyAPI Docker Config
+# Set MODELS_PATH and TABBY_MODEL_NAME in .env before running.
+services:
+  llm:
+    image: ghcr.io/theroyallab/tabbyapi:latest
+    container_name: tabbyapi
+    command:
+      - "/app/launch.py"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8000"
+      - "--disable-auth"
+      - "true"
+      - "--model-dir"
+      - "/app/models"
+      - "--model-name"
+      - "${TABBY_MODEL_NAME:?Set TABBY_MODEL_NAME in .env}"
+      - "--max-batch-size"
+      - "1"
+      - "--chunk-size"
+      - "1024"
+      - "--cache-size"
+      - "32768"
+    ports:
+      - "8000:8000"
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    volumes:
+      - ${MODELS_PATH:?Set MODELS_PATH in .env}:/app/models
+      - ./tabby/config.yml:/app/config.yml:ro
+      - ./tabby/launch.py:/app/launch.py:ro
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/models', timeout=3)"
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

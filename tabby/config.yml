@@ -1,0 +1,23 @@
+# Conservative starter config for ExLlamaV3/TabbyAPI.
+# Model is set via TABBY_MODEL_NAME in .env; this file is a fallback.
+
+# Networking
+host: 0.0.0.0
+port: 8000
+
+# Model loading (docker-compose --model-name from TABBY_MODEL_NAME takes precedence)
+model_dir: /app/models
+model_name: placeholder
+
+# Memory / batching safety first
+max_batch_size: 1
+chunk_size: 1024
+# Keep cache_size conservative at first. Raise only after you verify stable VRAM headroom.
+cache_size: 32768
+
+# Template / API behavior
+inline_templates: true
+# override_preset: safe_defaults
+
+# Logging
+log_level: INFO
