@@ -47,6 +47,15 @@ MODELS_PATH=/path/to/your/exl3/models
 TABBY_MODEL_NAME=Your-Model-Folder-Name
 ```
 
+### Tested model (example)
+
+- [MaxedSet/gemma-4-26B-A4B-it-exl3-4.0bpw](https://huggingface.co/MaxedSet/gemma-4-26B-A4B-it-exl3-4.0bpw)
+- Set `TABBY_MODEL_NAME=gemma-4-26B-A4B-it-exl3-4.0bpw`
+
+> VRAM note: In the model card's benchmark snapshot, this model used ~22GB VRAM on an RTX 3090 24GB environment. Actual usage depends on prompt length, max tokens, cache/chunk settings, and concurrent load.
+
+
+
 ### 3. Validate GPU access in Docker
 
 ```bash
