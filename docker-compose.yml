@@ -31,7 +31,7 @@ services:
       - ${MODELS_PATH:?Set MODELS_PATH in .env}:/app/models
       - ./tabby/config.yml:/app/config.yml:ro
       - ./tabby/launch.py:/app/launch.py:ro
-    restart: unless-stopped
+    restart: no #unless-stopped
     healthcheck:
       test:
         [
