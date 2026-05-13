@@ -28,7 +28,10 @@ services:
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: compute,utility
     volumes:
-      - ${MODELS_PATH:?Set MODELS_PATH in .env}:/app/models
+      # Mount only TABBY_MODEL_NAME under /app/models so /v1/models lists one model.
+      # Binding all of MODELS_PATH lists every sibling folder; clients using data[0] may
+      # pick the wrong id (e.g. gemma-... before qwen-...).
+      - ${MODELS_PATH:?Set MODELS_PATH in .env}/${TABBY_MODEL_NAME:?Set TABBY_MODEL_NAME in .env}:/app/models/${TABBY_MODEL_NAME}:ro
       - ./tabby/config.yml:/app/config.yml:ro
       - ./tabby/launch.py:/app/launch.py:ro
     restart: no #unless-stopped

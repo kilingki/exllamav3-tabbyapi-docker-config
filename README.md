@@ -37,13 +37,13 @@ cp .env.example .env
 
 ### 2. Edit `.env`
 
-Set the path to your EXL3 models directory and choose which model to load:
+Set the parent directory that holds your EXL3 model folders and the folder name to load:
 
 ```bash
-# Path to your EXL3 models directory (contains model folders)
+# Parent directory (each checkpoint is MODELS_PATH/<folder-name>/)
 MODELS_PATH=/path/to/your/exl3/models
 
-# Model folder name to load (must exist under MODELS_PATH)
+# Folder name to load (must exist as MODELS_PATH/TABBY_MODEL_NAME)
 TABBY_MODEL_NAME=Your-Model-Folder-Name
 ```
 
@@ -93,8 +93,10 @@ docker compose up -d --force-recreate
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `MODELS_PATH` | Host path to EXL3 models directory | (required) |
-| `TABBY_MODEL_NAME` | Model folder name to load | (required) |
+| `MODELS_PATH` | Host path to the **parent** directory that contains each model folder | (required) |
+| `TABBY_MODEL_NAME` | Model folder name to load (`${MODELS_PATH}/${TABBY_MODEL_NAME}` must exist) | (required) |
+
+Compose mounts only that folder into the container so `/v1/models` does not list unrelated checkpoints (avoids `data[0]` picking the wrong model id when several EXL3 folders sit in the same tree).
 | `OPENAI_BASE_URL` | API base URL for scripts | `http://localhost:8000/v1` |
 | `OPENAI_API_KEY` | API key (disabled by default) | `local-dev-key` |
 
@@ -153,6 +155,7 @@ curl http://localhost:8000/v1/chat/completions \
 - This stack runs with `--disable-auth true` for local development convenience.
 - `tabby/launch.py` is a compatibility shim for `huggingface_hub.HfFolder` removal in newer versions.
 - `tabby/config.yml` values are fallbacks; CLI args from `docker-compose.yml` take precedence.
+- **Single-model mount:** If the entire `MODELS_PATH` tree is bound to `/app/models`, Tabby can expose every sibling folder via `/v1/models`. Scripts that read `data[0].id` may then see Gemma while `--model-name` is Qwen. This stack mounts `${MODELS_PATH}/${TABBY_MODEL_NAME}` only so the list matches the loaded checkpoint.
 
 ## License
 
